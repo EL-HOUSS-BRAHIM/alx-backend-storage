@@ -16,8 +16,8 @@ def count_calls(method: Callable) -> Callable:
     """
     @wraps(method)
     def wrapper(self, *args, **kwargs) -> Any:
-        if isinstance(self._redis, redis.Redis):
-            self._redis.incr(method.__qualname__)
+        key = method.__qualname__
+        self._redis.incr(key)
         return method(self, *args, **kwargs)
     return wrapper
 
@@ -33,11 +33,9 @@ def call_history(method: Callable) -> Callable:
         input_key = f"{method.__qualname__}:inputs"
         output_key = f"{method.__qualname__}:outputs"
 
-        if isinstance(self._redis, redis.Redis):
-            self._redis.rpush(input_key, str(args))
+        self._redis.rpush(input_key, str(args))
         output = method(self, *args, **kwargs)
-        if isinstance(self._redis, redis.Redis):
-            self._redis.rpush(output_key, str(output))
+        self._redis.rpush(output_key, str(output))
 
         return output
     return wrapper
