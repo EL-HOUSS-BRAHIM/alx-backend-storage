@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import redis
 import uuid
 from typing import Union, Callable, Optional
@@ -8,7 +9,6 @@ from functools import wraps
 class Cache:
     """ Cache class
     """
-
     def __init__(self):
         """ Constructor method
         """
