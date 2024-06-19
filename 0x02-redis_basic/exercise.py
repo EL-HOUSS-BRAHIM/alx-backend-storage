@@ -9,7 +9,8 @@ def count_calls(method: Callable) -> Callable:
     """Decorator to count the number of calls to a method"""
     @wraps(method)
     def wrapper(self, *args, **kwargs):
-        """Wrapper function to increment the call count and call the original method"""
+        """Wrapper function to increment the call count
+        and call the original method"""
         key = method.__qualname__
         self._redis.incr(key)
         return method(self, *args, **kwargs)
@@ -46,7 +47,8 @@ def replay(method: Callable):
 
     print(f"{method_name} was called {len(inputs)} times:")
     for inp, out in zip(inputs, outputs):
-        print(f"{method_name}(*{inp.decode('utf-8')}) -> {out.decode('utf-8')}")
+        print(f"{method_name}(*{inp.decode('utf-8')}) -> {
+            out.decode('utf-8')}")
 
 
 class Cache:
@@ -63,8 +65,13 @@ class Cache:
         self._redis.set(key, data)
         return key
 
-    def get(self, key: str, fn: Optional[Callable] = None) -> Union[str, bytes, int, float, None]:
-        """Retrieve the data from Redis using the key and optional conversion function"""
+    def get(
+        self,
+        key: str,
+        fn: Optional[Callable] = None
+    ) -> Union[str, bytes, int, float, None]:
+        """Retrieve the data from Redis using the key
+        and optional conversion function"""
         data = self._redis.get(key)
         if data is None:
             return None
