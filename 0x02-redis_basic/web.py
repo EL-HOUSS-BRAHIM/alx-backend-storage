@@ -19,13 +19,20 @@ def data_cacher(method: Callable) -> Callable:
     def invoker(url) -> str:
         '''The wrapper function for caching the output.
         '''
+        # Increment the access count
         redis_store.incr(f'count:{url}')
-        result = redis_store.get(f'result:{url}')
-        if result:
-            return result.decode('utf-8')
+        
+        # Check if the result is cached
+        cached_result = redis_store.get(f'result:{url}')
+        if cached_result:
+            return cached_result.decode('utf-8')
+        
+        # If not cached, fetch the result
         result = method(url)
-        redis_store.set(f'count:{url}', 0)
+        
+        # Cache the result with an expiration time of 10 seconds
         redis_store.setex(f'result:{url}', 10, result)
+        
         return result
     return invoker
 
@@ -36,3 +43,4 @@ def get_page(url: str) -> str:
     and tracking the request.
     '''
     return requests.get(url).text
+
